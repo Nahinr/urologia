@@ -14,7 +14,6 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\MedicalHistory::class => \App\Policies\MedicalHistoryPolicy::class,
         \App\Models\Prescription::class => \App\Policies\PrescriptionPolicy::class,
         \App\Models\Attachment::class => \App\Policies\AttachmentPolicy::class,
-        \App\Models\Surgery::class => \App\Policies\SurgeryPolicy::class,
 
         // Policies externas (Spatie)
         \Spatie\Permission\Models\Role::class       => \App\Policies\RolePolicy::class,

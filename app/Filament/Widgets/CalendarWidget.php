@@ -3,9 +3,9 @@
 namespace App\Filament\Widgets;
 
 use Filament\Forms;
-use App\Models\User;
 use App\Models\Contact;
 use App\Models\Patient;
+use App\Models\User;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Appointment;
@@ -13,21 +13,20 @@ use Carbon\CarbonImmutable;
 use Filament\Support\RawJs;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Grid;
-use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Schema;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Saade\FilamentFullCalendar\Actions;
 use Filament\Notifications\Notification;
 use App\Filament\Forms\Fields\PhoneField;
 use Filament\Forms\Components\DatePicker;
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget as BaseFullCalendarWidget;
-use Throwable;
+use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 
 
-class CalendarWidget extends BaseFullCalendarWidget
+class CalendarWidget extends FullCalendarWidget
 {
     protected int|string|array $columnSpan = 'full';
     protected static ?int $sort = 1;
@@ -94,16 +93,7 @@ class CalendarWidget extends BaseFullCalendarWidget
 
         return CarbonImmutable::parse($input, $this->calendarTz)->format('H:i');
     }
-    private function isMonthView(array $info): bool
-    {
-        $viewType = data_get($info, 'view.type') ?? data_get($info, 'type');
 
-        if (! is_string($viewType)) {
-            return false;
-        }
-
-        return in_array($viewType, ['dayGridMonth', 'multiMonth', 'multiMonthYear'], true);
-    }
     /** Opciones 30 min (valor H:i, etiqueta 12h am/pm) */
     private function timeOptions(): array
     {
@@ -362,7 +352,7 @@ class CalendarWidget extends BaseFullCalendarWidget
                     'start_datetime' => $start?->format('Y-m-d H:i'),
                     'end_datetime'   => $end?->format('Y-m-d H:i'),
                     'observations'   => $record->observations,
-                    'patient_phone'         => $best['phone'],
+                    'patient_phone'         => $best['phone'], 
                     'patient_phone_source'  => $best['source'],
                 ]);
             })
@@ -425,8 +415,8 @@ class CalendarWidget extends BaseFullCalendarWidget
                 ->rules(['exists:patients,id'])
                 ->searchable()
                 ->preload(false)
-                ->live()
-                ->reactive()
+                ->live()          
+                ->reactive() 
                 ->options(fn () => [])
                 ->getSearchResultsUsing(function (string $search) {
                     $s = trim($search);
@@ -480,7 +470,7 @@ class CalendarWidget extends BaseFullCalendarWidget
                             ->maxLength(80)
                             ->columnSpan(6),
 
-
+                        
                         ...PhoneField::schema(
                             countryField: 'express_phone_country',   // nombres únicos en el modal
                             nationalField: 'express_phone_national',
@@ -537,7 +527,7 @@ class CalendarWidget extends BaseFullCalendarWidget
 
             Forms\Components\TextInput::make('patient_phone')
             ->label('Teléfono')
-            ->readOnly()
+            ->readOnly() 
             ->reactive()        // solo lectura (recomendado)
             ->dehydrated(false)   // no se guarda en la cita; lo trae de Patient
             ->helperText(function (Get $get) {
@@ -704,7 +694,6 @@ class CalendarWidget extends BaseFullCalendarWidget
             'snapDuration' => '00:30:00',
             'nowIndicator' => true,
             'selectable'   => true,
-            'selectAllow'  => RawJs::make('({ view }) => view.type !== "dayGridMonth"'),
             'editable'     => true,
             'timeZone'     => $this->calendarTz,
 
@@ -727,17 +716,26 @@ class CalendarWidget extends BaseFullCalendarWidget
                 'right'  => 'prev,next',
             ],
 
-            'views' => [
-                'dayGridMonth' => [
-                    'selectable' => false,
-                ],
+            'titleFormat' => [
+                'year' => 'numeric',
+                'month' => 'long',
+                'day' => 'numeric',
             ],
 
-            'titleFormat' => [
-            'year' => 'numeric',
-            'month' => 'long',
-            'day' => 'numeric',
-            ],
+            'datesSet' => RawJs::make(<<<'JS'
+                function(info) {
+                    const isMonthView = info.view.type === 'dayGridMonth';
+                    info.view.calendar.setOption('selectable', !isMonthView);
+                }
+            JS),
+
+            'dateClick' => RawJs::make(<<<'JS'
+                function(info) {
+                    if (info.view.type === 'dayGridMonth') {
+                        info.view.calendar.changeView('timeGridDay', info.date);
+                    }
+                }
+            JS),
         ];
     }
 
@@ -785,55 +783,11 @@ class CalendarWidget extends BaseFullCalendarWidget
         }
     }
 
-
-
-    public function onDateSelect(string $start, ?string $end, bool $allDay, ?array $view, ?array $resource): void
-    {
-        if ($this->isMonthView($view ?? [])) {
-
-            return;
-        }
-
-        parent::onDateSelect($start, $end, $allDay, $view, $resource);
-    }
-
     public function onSelect(array $info): void
     {
-      if ($this->isMonthView($info)) {
-            return;
-        }
-
         $this->mountAction('create', arguments: [
             'start' => $info['start'] ?? null,
             'end'   => $info['end'] ?? null,
-        ]);
-    }
-
-    public function onDateClick(array $info): void
-    {
-        if ($this->isMonthView($info)) {
-            return;
-        }
-
-        if (method_exists(BaseFullCalendarWidget::class, 'onDateClick')) {
-            parent::onDateClick($info);
-
-            return;
-        }
-
-        $dateInput = $info['date'] ?? $info['dateStr'] ?? null;
-
-        try {
-            $start = $dateInput
-                ? CarbonImmutable::parse($dateInput)->setTimezone($this->calendarTz)
-                : CarbonImmutable::now($this->calendarTz);
-        } catch (Throwable) {
-            $start = CarbonImmutable::now($this->calendarTz);
-        }
-
-        $this->mountAction('create', arguments: [
-            'start' => $start->toIso8601String(),
-            'end'   => $start->addMinutes(30)->toIso8601String(),
         ]);
     }
 }

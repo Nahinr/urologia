@@ -193,55 +193,19 @@ class GoogleCalendarAuthorizationController extends Controller
 
     protected function sanitizeRedirectUrl(?string $redirect, User $doctor): string
     {
-        $default = $this->defaultRedirectUrl($doctor);
-
         if (! $redirect) {
-            return $default;
-        }
-
-        $redirect = trim($redirect);
-
-        if ($redirect === '' || $this->isLivewireEndpoint($redirect)) {
-            return $default;
+            return UserResource::getUrl('edit', ['record' => $doctor]);
         }
 
         if (Str::startsWith($redirect, ['http://', 'https://'])) {
-            if (! Str::startsWith($redirect, url('/'))) {
-                return $default;
-            }
-
-            $path = (string) parse_url($redirect, PHP_URL_PATH);
-
-            return $this->isLivewireEndpoint($path) ? $default : $redirect;
+            return Str::startsWith($redirect, url('/'))
+                ? $redirect
+                : UserResource::getUrl('edit', ['record' => $doctor]);
         }
 
         $normalized = '/'.ltrim($redirect, '/');
 
-        if ($this->isLivewireEndpoint($normalized)) {
-            return $default;
-        }
-
         return url($normalized);
-    }
-
-    protected function isLivewireEndpoint(?string $value): bool
-    {
-        if (! $value) {
-            return false;
-        }
-
-        return Str::contains($value, '/livewire/');
-    }
-
-    protected function defaultRedirectUrl(User $doctor): string
-    {
-        $actor = Auth::user();
-
-        if ($actor && $actor->is($doctor)) {
-            return route('filament.admin.pages.calendario');
-        }
-
-        return UserResource::getUrl('edit', ['record' => $doctor]);
     }
 
     protected function decodeState(string $state): array

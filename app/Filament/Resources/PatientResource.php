@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Patient;
-use App\Models\ClinicalBackground;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Illuminate\Support\Str;
@@ -61,9 +60,9 @@ class PatientResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([SoftDeletingScope::class])
             ->with('contacts');          // evita N+1
-
+                
     }
-
+    
     public static function formSchema(): array
     {
         $formatAge = function (?string $date): ?string {
@@ -299,7 +298,7 @@ class PatientResource extends Resource
                     ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(),
-
+                    
                 TextColumn::make('age')
                     ->label('Edad')
                        ->getStateUsing(function (Patient $r) {
@@ -327,7 +326,7 @@ class PatientResource extends Resource
                     ->copyable()
                     ->searchable()
                     ->toggleable(),
-
+                
                 TextColumn::make('contact_phone')
                     ->label('Teléfono contacto')
                     ->getStateUsing(fn (Patient $r) => optional($r->contacts->first())->phone)
@@ -352,6 +351,7 @@ class PatientResource extends Resource
                     ->options(static::clinicalImpressionOptions())
                     ->searchable()
                     ->preload()
+                    ->visible(fn () => Filament::auth()->user()?->hasRole('Doctor'))
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
 

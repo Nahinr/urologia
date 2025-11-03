@@ -5,10 +5,8 @@ namespace App\Support\GoogleCalendar;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class GoogleCalendarService
 {
@@ -92,74 +90,6 @@ class GoogleCalendarService
                 'doctor_id' => optional($doctor)->getKey(),
             ]);
         }
-    }
-
-    public function syncAppointmentFromGoogle(Appointment $appointment): bool
-    {
-        $appointment->loadMissing('doctor');
-
-        $doctor = $appointment->doctor;
-        $eventId = $appointment->google_event_id;
-
-        if (! $eventId || ! $this->doctorCanSync($doctor)) {
-            return false;
-        }
-
-        $token = $this->ensureAccessToken($doctor);
-
-        if (! $token) {
-            return false;
-        }
-
-        $response = Http::withToken($token)
-            ->get($this->eventUrl($doctor->googleCalendarCalendarId(), $eventId));
-
-        if ($response->status() === 404) {
-            Appointment::withoutEvents(function () use ($appointment): void {
-                $appointment->forceFill(['google_event_id' => null])->save();
-            });
-
-            return false;
-        }
-
-        if (! $response->successful()) {
-            Log::warning('Unable to fetch Google Calendar event', [
-                'response' => $response->json(),
-                'status' => $response->status(),
-                'appointment_id' => $appointment->getKey(),
-                'doctor_id' => optional($doctor)->getKey(),
-            ]);
-
-            return false;
-        }
-
-        $event = $response->json();
-
-        $start = $this->parseEventDateTime(Arr::get($event, 'start'));
-        $end = $this->parseEventDateTime(Arr::get($event, 'end'));
-
-        if (! $start || ! $end) {
-            return false;
-        }
-
-        $currentStart = $appointment->start_datetime ? $appointment->start_datetime->copy()->setTimezone($start->getTimezone()) : null;
-        $currentEnd = $appointment->end_datetime ? $appointment->end_datetime->copy()->setTimezone($end->getTimezone()) : null;
-
-        $startChanged = ! $currentStart || ! $currentStart->equalTo($start);
-        $endChanged = ! $currentEnd || ! $currentEnd->equalTo($end);
-
-        if (! $startChanged && ! $endChanged) {
-            return false;
-        }
-
-        Appointment::withoutEvents(function () use ($appointment, $start, $end): void {
-            $appointment->forceFill([
-                'start_datetime' => $start,
-                'end_datetime' => $end,
-            ])->save();
-        });
-
-        return true;
     }
 
     protected function createEvent(User $doctor, Appointment $appointment, string $token, array $payload): void
@@ -323,33 +253,5 @@ class GoogleCalendarService
         }
 
         return $base;
-    }
-
-    protected function parseEventDateTime(mixed $value): ?Carbon
-    {
-        if (! is_array($value)) {
-            return null;
-        }
-
-        $dateValue = Arr::get($value, 'dateTime') ?? Arr::get($value, 'date');
-
-        if (! $dateValue) {
-            return null;
-        }
-
-        $timezone = Arr::get($value, 'timeZone') ?? config('app.timezone', 'UTC');
-
-        try {
-            $date = Carbon::parse($dateValue, $timezone);
-        } catch (Throwable $exception) {
-            Log::warning('Unable to parse Google Calendar date value.', [
-                'value' => $value,
-                'exception' => $exception,
-            ]);
-
-            return null;
-        }
-
-        return $date->setTimezone(config('app.timezone', 'UTC'));
     }
 }

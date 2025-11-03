@@ -46,7 +46,8 @@ class Expedientes extends Page
         return $u->can('clinical-background.view')
             || $u->can('history.view')
             || $u->can('prescription.view')
-            || $u->can('patient.attachments.view');
+            || $u->can('patient.attachments.view')
+            || $u->can('surgery.view');
     }
 
     public function getHeading(): string
@@ -101,6 +102,10 @@ class Expedientes extends Page
             $tabs[] = 'imagenes';
         }
 
+        if ($u?->can('surgery.view')) {
+        $tabs[] = 'cirugias';
+        }
+
         return $tabs;
     }
 
@@ -126,6 +131,7 @@ class Expedientes extends Page
                 || $u->can('history.view')
                 || $u->can('prescription.view')
                 || $u->can('patient.attachments.view')
+                || $u->can('surgery.view')
             );
     }
 

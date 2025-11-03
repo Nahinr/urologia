@@ -1,10 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\GoogleCalendarAuthorizationController;
-use Illuminate\Support\Facades\Route;
 
+
+Route::get('optimize', function () {
+    Artisan::call('optimize:clear');
+    return 'Application cache cleared';
+});
 Route::get('/', function () {
     return redirect()->route('filament.admin.pages.calendario');
 });

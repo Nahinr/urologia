@@ -117,6 +117,18 @@
                             </x-filament::tabs.item>
                             @endcan
 
+                            @can('surgery.view')
+                            <x-filament::tabs.item
+                                :active="$tab === 'cirugias'"
+                                wire:click="setTab('cirugias')"
+                                class="!px-4 !py-2 !rounded-md"
+                                :class="$tab === 'cirugias'
+                                    ? '!text-white !shadow-sm'
+                                    : '!text-slate-700'">
+                                Cirugías
+                            </x-filament::tabs.item>
+                            @endcan
+
                         </x-filament::tabs>
 
                     </div>
@@ -161,6 +173,16 @@
                                 Agregar
                             </x-filament::button>
                             @endcan
+
+                        @elseif ($tab === 'cirugias')
+                            @can('surgery.create')
+                            <x-filament::button
+                                icon="heroicon-o-plus"
+                                wire:click="$dispatch('open-create-surgery')"
+                            >
+                                Nueva cirugía
+                            </x-filament::button>
+                            @endcan
                         @endif
                     </div>
                 </div>
@@ -186,6 +208,10 @@
             @elseif ($tab === 'imagenes')
                 @can('patient.attachments.viewAny')
                     <livewire:clinic.tabs.images-tab :patientId="$patient->id" />
+                @endcan
+            @elseif ($tab === 'cirugias')
+                @can('surgery.view')
+                    <livewire:clinic.tabs.surgeries-tab :patientId="$patient->id" />
                 @endcan
             @endif
         @else

@@ -61,9 +61,9 @@ class PatientResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([SoftDeletingScope::class])
             ->with('contacts');          // evita N+1
-                
+
     }
-    
+
     public static function formSchema(): array
     {
         $formatAge = function (?string $date): ?string {
@@ -299,7 +299,7 @@ class PatientResource extends Resource
                     ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(),
-                    
+
                 TextColumn::make('age')
                     ->label('Edad')
                        ->getStateUsing(function (Patient $r) {
@@ -327,7 +327,7 @@ class PatientResource extends Resource
                     ->copyable()
                     ->searchable()
                     ->toggleable(),
-                
+
                 TextColumn::make('contact_phone')
                     ->label('Teléfono contacto')
                     ->getStateUsing(fn (Patient $r) => optional($r->contacts->first())->phone)
@@ -347,28 +347,20 @@ class PatientResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()->label('Archivados'),
-                SelectFilter::make('clinical_impression')
+                Tables\Filters\SelectFilter::make('clinical_impression')
                     ->label('Impresión clínica')
-                    ->placeholder('Todas')
-                    ->options(fn () => ClinicalBackground::query()
-                        ->whereNotNull('clinical_impression')
-                        ->distinct()
-                        ->orderBy('clinical_impression')
-                        ->pluck('clinical_impression', 'clinical_impression')
-                        ->toArray()
-                    )
+                    ->options(static::clinicalImpressionOptions())
+                    ->searchable()
+                    ->preload()
                     ->query(function (Builder $query, array $data): Builder {
                         $value = $data['value'] ?? null;
 
-                        if (! filled($value)) {
+                        if (! $value) {
                             return $query;
                         }
 
-                        return $query->whereHas('clinicalBackground', function (Builder $clinicalQuery) use ($value) {
-                            $clinicalQuery->where('clinical_impression', $value);
-                        });
-                    })
-                    ->indicator(fn (array $data) => ($data['value'] ?? null) ? 'Impresión clínica: ' . $data['value'] : null),
+                        return $query->whereHas('clinicalBackground', fn (Builder $subQuery) => $subQuery->where('clinical_impression', $value));
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->visible(fn () => Filament::auth()->user()?->can('patient.view')),
@@ -390,8 +382,26 @@ class PatientResource extends Resource
         return [
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
-            
+
             'edit' => Pages\EditPatient::route('/{record}/edit'),
         ];
+    }
+
+    protected static function clinicalImpressionOptions(): array
+    {
+        $path = base_path('resources/data/clinical_impressions.json');
+
+        if (! is_file($path)) {
+            return [];
+        }
+
+        $items = json_decode(file_get_contents($path), true) ?? [];
+
+        return collect($items)
+            ->filter(fn ($item) => isset($item['CIE-10'], $item['Descripción']))
+            ->mapWithKeys(fn ($item) => [
+                $item['CIE-10'] => $item['CIE-10'] . ' - ' . $item['Descripción'],
+            ])
+            ->all();
     }
 }

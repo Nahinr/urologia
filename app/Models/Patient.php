@@ -82,6 +82,11 @@ class Patient extends Model
         )->latest('issued_at');
     }
 
+    public function surgeries()
+    {
+        return $this->hasMany(\App\Models\Surgery::class);
+    }
+
     /** ---- Helpers ------------------------------------------------------ */
     public static function normalizeDigits(?string $value): string
     {

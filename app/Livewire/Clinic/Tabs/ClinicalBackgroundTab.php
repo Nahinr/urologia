@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Clinic\Tabs;
 
+use Illuminate\Support\Arr;
+use Livewire\Attributes\On;
 use App\Models\ClinicalBackground;
-use App\Support\Presenters\ClinicalBackgroundPresenter;
+use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Arr;
-use Illuminate\Support\HtmlString;
-use Livewire\Attributes\On;
+use App\Support\Presenters\ClinicalBackgroundPresenter;
 
 class ClinicalBackgroundTab extends PatientTab
 {
@@ -305,7 +306,22 @@ class ClinicalBackgroundTab extends PatientTab
     {
         return Section::make('Conclusiones y Plan de Tratamiento')
             ->schema([
-                TextInput::make('clinical_impression')->label('Impresión clínica'),
+                Select::make('clinical_impression')
+                ->label('Impresión clínica')
+                ->searchable()
+                ->preload()
+                ->options(function () {
+                    $path = base_path('resources/data/clinical_impressions.json');
+                    $items = json_decode(file_get_contents($path), true) ?? [];
+
+                    return collect($items)
+                        ->filter(fn ($it) => isset($it['CIE-10'], $it['Descripción']))
+                        ->mapWithKeys(fn ($it) => [
+                            $it['CIE-10'] => $it['CIE-10'].' - '.$it['Descripción'],
+                        ])
+                        ->all();
+                }),
+
                 TextInput::make('special_tests')->label('Pruebas especiales'),
                 Textarea::make('disposition_and_treatment')->label('Disposición y tratamiento')->autosize(),
             ]);

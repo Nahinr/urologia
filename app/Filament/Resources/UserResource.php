@@ -96,6 +96,48 @@ class UserResource extends Resource
                                     ->native(false),
                 ])->columns(3),
 
+                Forms\Components\Section::make('Google Calendar')
+                    ->description('Sincroniza automáticamente las citas del doctor con su agenda personal de Google.')
+                    ->visible(fn (Get $get): bool => static::doctorRoleSelected($get('roles'), $get('id')))
+                    ->schema([
+                        Forms\Components\Placeholder::make('google_calendar_status')
+                            ->label('Estado de conexión')
+                            ->content(function (?User $record): string {
+                                if (! $record) {
+                                    return 'Disponible al guardar el usuario.';
+                                }
+
+                                if ($record->hasGoogleCalendarLink()) {
+                                    return 'Conectado como '.$record->google_calendar_email;
+                                }
+
+                                return 'Sin conexión';
+                            })
+                            ->columnSpan(1),
+
+                        Forms\Components\TextInput::make('google_calendar_id')
+                            ->label('ID de calendario')
+                            ->placeholder('primary')
+                            ->helperText('Deja este campo vacío para usar el calendario principal de la cuenta conectada.')
+                            ->maxLength(191)
+                            ->columnSpan(1),
+
+                        Forms\Components\Placeholder::make('google_calendar_token_expires_at')
+                            ->label('Token válido hasta')
+                            ->content(function (?User $record): string {
+                                if (! $record || ! $record->google_calendar_token_expires_at) {
+                                    return '—';
+                                }
+
+                                return $record->google_calendar_token_expires_at
+                                    ->copy()
+                                    ->setTimezone(config('app.timezone', 'UTC'))
+                                    ->format('Y-m-d H:i');
+                            })
+                            ->columnSpanFull()
+                            ->hint('Para conectar o actualizar la vinculación utiliza las acciones en la parte superior de este formulario.'),
+                    ])
+                    ->columns(2),
 
                     Forms\Components\Section::make('Roles')
                         ->schema([
@@ -179,7 +221,7 @@ class UserResource extends Resource
                             'inactive' => 'danger',
                             default => 'gray',
                         }),
-
+                    
             ])
             ->filters([
                 //
@@ -237,7 +279,7 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-
+            
                 ]),
             ]);
     }
@@ -279,58 +321,16 @@ class UserResource extends Resource
             return false;
         }
 
-        if ($roleIds instanceof \Illuminate\Support\Collection) {
-            $roleIds = $roleIds->all();
-        }
-
         if (is_array($roleIds)) {
-            foreach ($roleIds as $role) {
-                if (is_numeric($role) && (int) $role === (int) $doctorRoleId) {
-                    return true;
-                }
-
-                if ($role instanceof Role && (int) $role->getKey() === (int) $doctorRoleId) {
-                    return true;
-                }
-
-                if (is_array($role)) {
-                    if (isset($role['id']) && (int) $role['id'] === (int) $doctorRoleId) {
-                        return true;
-                    }
-
-                    if (isset($role['name']) && $role['name'] === 'Doctor') {
-                        return true;
-                    }
-                }
-
-                if (is_string($role) && $role === 'Doctor') {
-                    return true;
-                }
-            }
-
-            return false;
+            return in_array($doctorRoleId, $roleIds, true);
         }
 
         if ($roleIds instanceof \Traversable) {
             foreach ($roleIds as $roleId) {
-                if (is_numeric($roleId) && (int) $roleId === (int) $doctorRoleId) {
-                    return true;
-                }
-
-                if ($roleId instanceof Role && (int) $roleId->getKey() === (int) $doctorRoleId) {
-                    return true;
-                }
-
-                if (is_array($roleId) && isset($roleId['id']) && (int) $roleId['id'] === (int) $doctorRoleId) {
-                    return true;
-                }
-
-                if (is_string($roleId) && $roleId === 'Doctor') {
+                if ((int) $roleId === (int) $doctorRoleId) {
                     return true;
                 }
             }
-
-            return false;
         }
 
         if ($recordId) {

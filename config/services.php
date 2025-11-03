@@ -35,21 +35,4 @@ return [
         ],
     ],
 
-    'google_calendar' => [
-        'client_id' => env('GOOGLE_CALENDAR_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CALENDAR_CLIENT_SECRET'),
-        'scopes' => array_filter(explode(' ', env('GOOGLE_CALENDAR_SCOPES', 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.email'))),
-    ],
-
-    'easysendsms' => [
-        'api_key' => env('EASYSENDSMS_API_KEY'),
-        'sender' => env('EASYSENDSMS_SENDER'),
-        'base_url' => env('EASYSENDSMS_BASE_URL', 'https://restapi.easysendsms.app/v1/rest'),
-    ],
-
-    'twilio' => [
-        'sid' => env('TWILIO_SID'),
-        'token' => env('TWILIO_TOKEN'),
-        'from' =>  env('TWILIO_FROM'),
-    ],
 ];

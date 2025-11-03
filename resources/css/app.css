@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+/* Blades de tu app */
+@source '../../resources/views/**/*.blade.php';
+
+/* Archivos JS con Alpine/HTMX, etc. */
+@source '../../resources/js/**/*.js';
+
+/* Componentes Livewire/Filament donde a veces pones clases en strings PHP */
+@source '../../app/Livewire/**/*.php';
+@source '../../app/Filament/**/*.php';
+
+/* (Opcional) Paginación de Laravel si la personalizas con clases Tailwind */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.fc .fc-day-today {
+  background: transparent !important;
+}
+
+/* Pintar SOLO la cabecera del día actual (dayGrid y timeGrid) */
+.fc .fc-col-header .fc-col-header-cell.fc-day-today {
+  background: #FEF3C7; /* amber-100 */
+  color: #92400E;      /* amber-700 */
+  font-weight: 600;
+  border-bottom: 2px solid #F59E0B; /* amber-500 */
+}
+
+/* Asegura que eventos y clics funcionen normal (no tocar hit-areas) */
+.fc .fc-timegrid-col,
+.fc .fc-daygrid-day {
+  pointer-events: auto;
+}
+

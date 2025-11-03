@@ -14,31 +14,40 @@ class AppointmentReminderScheduler
         $start = $appointment->start_datetime;
 
         if (!$start instanceof Carbon) {
-            Log::warning('Appointment reminder scheduling skipped due to missing start time.', [
+            Log::warning('Reminder scheduling skipped: missing start.', [
                 'appointment_id' => $appointment->id,
             ]);
             return;
         }
 
-        $start = $start->copy();
-        $now = now($start->getTimezone());
+        $tz    = config('app.timezone', 'UTC');
+        $now   = now($tz);
+        $start = $start->clone()->timezone($tz);
 
         if ($start->lessThanOrEqualTo($now)) {
+            // Cita en pasado → no programar
             return;
         }
 
-        foreach (SendAppointmentReminderSms::offsets() as $reminder => $minutes) {
-            $sendAt = $start->copy()->subMinutes($minutes);
+        // ÚNICO recordatorio: 24 h antes
+        $sendAt = $start->clone()->subDay();
 
-            if ($sendAt->lessThan($now)) {
-                // If the reminder time already passed but the appointment is still upcoming, send immediately.
-                if ($start->greaterThan($now)) {
-                    SendAppointmentReminderSms::dispatch($appointment->id, $reminder);
-                }
-                continue;
+        if ($sendAt->lessThan($now)) {
+            // Si el target ya pasó, pero el retraso es razonable (≤ 90 min), envía ahora
+            if ($now->diffInMinutes($sendAt) <= 90) {
+                SendAppointmentReminderSms::dispatch(
+                    $appointment->id,
+                    SendAppointmentReminderSms::REMINDER_24_HOURS
+                );
             }
-
-            SendAppointmentReminderSms::dispatch($appointment->id, $reminder)->delay($sendAt);
+            // Si el retraso es mayor, no enviar (caducado)
+            return;
         }
+
+        // Programar exacto por delay
+        SendAppointmentReminderSms::dispatch(
+            $appointment->id,
+            SendAppointmentReminderSms::REMINDER_24_HOURS
+        )->delay($sendAt);
     }
 }

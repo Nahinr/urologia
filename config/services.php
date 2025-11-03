@@ -47,4 +47,9 @@ return [
         'base_url' => env('EASYSENDSMS_BASE_URL', 'https://restapi.easysendsms.app/v1/rest'),
     ],
 
+    'twilio' => [
+        'sid' => env('TWILIO_SID'),
+        'token' => env('TWILIO_TOKEN'),
+        'from' =>  env('TWILIO_FROM'),
+    ],
 ];

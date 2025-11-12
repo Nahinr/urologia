@@ -46,37 +46,23 @@ class MedicalHistoriesTab extends PatientTab
                         ->seconds(false)
                         ->native(false),
 
-                    Grid::make([
-                        'default' => 1,
-                        'md' => 6,
-                    ])->schema([
-                        Textarea::make('findings')
-                            ->label('Hallazgos')
-                            ->rows(2)
-                            ->columnSpan(['md' => 3]),
+                    Grid::make(['default' => 1, 'md' => 2])->schema([
+                        Textarea::make('evolution')
+                            ->label('Evolución')
+                            ->rows(6)
+                            ->placeholder('Describir evolución desde la última consulta, respuesta a tratamiento, síntomas actuales…')
+                            ->columnSpan(1),
 
-                        Textarea::make('tx')
-                            ->label('Tratamiento')
-                            ->rows(2)
-                            ->columnSpan(['md' => 3]),
-                    ]),
-
-                    // Refracción en 3 columnas
-                    Grid::make(3)->schema([
-                        \Filament\Forms\Components\TextInput::make('refraction_od')
-                            ->label('Refracción OD'),
-
-
-                        \Filament\Forms\Components\TextInput::make('refraction_os')
-                            ->label('Refracción OS'),
-
-                        \Filament\Forms\Components\TextInput::make('refraction_add')
-                            ->label('ADD')
-                            ->suffix('D'),
+                        Textarea::make('physical_exam')
+                            ->label('Examen Físico')
+                            ->rows(6)
+                            ->placeholder('Signos vitales relevantes y hallazgos al examen físico…')
+                            ->columnSpan(1),
                     ]),
                 ]),
         ];
     }
+
 
     protected function getFormModel(): MedicalHistory|string|null
     {

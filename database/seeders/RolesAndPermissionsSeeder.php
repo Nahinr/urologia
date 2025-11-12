@@ -30,6 +30,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'clinical-background.delete','clinical-background.restore','clinical-background.forceDelete',
             'prescription.view','prescription.create','prescription.update',
             'prescription.delete','prescription.restore','prescription.forceDelete',
+            'preclinic.view','preclinic.create','preclinic.update','preclinic.delete',
+            'preclinic.restore','preclinic.forceDelete',
         ];
 
         foreach ($perms as $p) {
@@ -51,6 +53,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'patient.attachments.update','patient.attachments.download',
             'clinical-background.view','clinical-background.create','clinical-background.update',
             'prescription.view','prescription.create','prescription.update',
+            'preclinic.view','preclinic.create','preclinic.update',
         ]);
 
         $recept->syncPermissions([

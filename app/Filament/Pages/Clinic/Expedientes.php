@@ -101,6 +101,10 @@ class Expedientes extends Page
             $tabs[] = 'imagenes';
         }
 
+        if ($u?->can('preclinic.view')) {
+            $tabs[] = 'preclinica';
+        }
+
         return $tabs;
     }
 

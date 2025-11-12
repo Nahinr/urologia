@@ -2,7 +2,7 @@
     $clinic = config('clinic');
     
     // 1) Ruta absoluta esperada dentro del contenedor (Sail)
-    $logoPath = $clinic['logo_path'] ?? public_path('images/clinic-logo.png');
+    $logoPath = $clinic['logo_path'] ?? public_path('images/logo.png');
 
     // 2) Preparar base64 (si existe y es legible)
     $logoData = null; $logoMime = null;

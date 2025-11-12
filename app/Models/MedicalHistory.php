@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MedicalHistory extends Model
 {
     protected $fillable = [
-        'patient_id','user_id','findings','refraction_od','refraction_os','refraction_add','tx','visit_date',
+        'patient_id','user_id','evolution','physical_exam','visit_date',
     ];
 
     protected $casts = [

@@ -7,7 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class ClinicalBackground extends Model
 {
         protected $fillable = [
-        'patient_id','clinical_history','ocular_meds','systemic_meds','allergies',
+        'patient_id',
+            // === NUEVOS CAMPOS EXPEDIENTES V2 ===
+        'hea','app',
+        'has_diabetes','diabetes_treatment',
+        'has_hypertension','hypertension_treatment',
+        'has_urologic_disease','urologic_treatment',
+        'aqx','ago','a_aler',
+        'physical_exam','diagnosis','treatment',
+            // ====================================
+        
+        'clinical_history','ocular_meds','systemic_meds','allergies',
         'personal_path_history','trauma_surgical_history','ophthalmologic_surgical_history',
         'fam_glaucoma','fam_retinal_detachment','fam_cataract','fam_blindness',
         'fam_diabetes','fam_hypertension','fam_thyroid','fam_anemia','fam_other',
@@ -24,6 +34,11 @@ class ClinicalBackground extends Model
         'clinical_impression','special_tests','disposition_and_treatment',
     ];
 
+    protected $casts = [
+        'has_diabetes'         => 'boolean',
+        'has_hypertension'     => 'boolean',
+        'has_urologic_disease' => 'boolean',
+    ];
     public function patient() { return $this->belongsTo(Patient::class); }
 
     public function user() { return $this->belongsTo(\App\Models\User::class, 'user_id'); }

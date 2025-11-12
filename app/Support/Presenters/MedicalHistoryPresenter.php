@@ -64,26 +64,15 @@ class MedicalHistoryPresenter
             ?? '—';
     }
 
-    public function findings(int $limit = 140): string
+    /** NUEVO: resumen de Evolución */
+    public function evolution(int $limit = 200): string
     {
-        return Str::limit($this->history->findings, $limit) ?: '—';
+        return Str::limit((string) $this->history->evolution, $limit) ?: '—';
     }
 
-    public function treatment(int $limit = 140): string
+    /** NUEVO: resumen de Examen Físico */
+    public function physicalExam(int $limit = 200): string
     {
-        return Str::limit($this->history->tx, $limit) ?: '—';
-    }
-
-    public function refractionSummary(): string
-    {
-        $od = $this->history->refraction_od ?? '—';
-        $os = $this->history->refraction_os ?? '—';
-        $summary = "OD: {$od}, OS: {$os}";
-
-        if (! empty($this->history->refraction_add)) {
-            $summary .= " · ADD: {$this->history->refraction_add}";
-        }
-
-        return $summary;
+        return Str::limit((string) $this->history->physical_exam, $limit) ?: '—';
     }
 }

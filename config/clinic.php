@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'name'        => env('CLINIC_NAME', 'Centro Oftalmológico Los Próceres'),
-    'slogan'      => 'Cuidamos tu salud visual',
-    'address'     => 'Col. X, San Pedro Sula, Cortés, Honduras',
+    'name'        => env('CLINIC_NAME', 'Centro de Especialidades Médicas del Valle'),
+    'slogan'      => 'Donde cuidamos tu salud',
+    'address'     => 'Col. X, Comayagua, Comayagua Honduras',
     'phone'       => '+504 9999-9999',
-    'email'       => 'contacto@losproceres.hn',
-    'logo_path'   => public_path('images/logo.jpg'), // súbelo a /public/images
+    'email'       => 'contacto@gmail.com',
+    'logo_path'   => public_path('images/logo.png'), // súbelo a /public/images
     'city_date_tz'=> 'America/Tegucigalpa',
 ];

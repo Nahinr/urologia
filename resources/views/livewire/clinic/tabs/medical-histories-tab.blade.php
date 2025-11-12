@@ -48,18 +48,13 @@
 
                         <div class="mt-2 space-y-2">
                             <div>
-                                <span class="font-semibold">Hallazgos:</span>
-                                <span class="text-gray-500">{{ $presenter?->findings() ?? '—' }}</span>
+                                <span class="font-semibold">Evolución:</span>
+                                <span class="text-gray-500">{{ $presenter?->evolution() ?? '—' }}</span>
                             </div>
 
                             <div>
-                                <span class="font-semibold">Tratamiento:</span>
-                                <span class="text-gray-500">{{ $presenter?->treatment() ?? '—' }}</span>
-                            </div>
-
-                            <div>
-                                <span class="font-semibold">Refracción:</span>
-                                <span class="text-gray-500">{{ $presenter?->refractionSummary() ?? '—' }}</span>
+                                <span class="font-semibold">Examen Físico:</span>
+                                <span class="text-gray-500">{{ $presenter?->physicalExam() ?? '—' }}</span>
                             </div>
                         </div>
                     </div>

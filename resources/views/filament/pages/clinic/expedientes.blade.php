@@ -81,6 +81,16 @@
                             </x-filament::tabs.item>
                             @endcan
 
+                            @can('preclinic.view')
+                            <x-filament::tabs.item
+                                :active="$tab === 'preclinica'"
+                                wire:click="setTab('preclinica')"
+                                class="!px-4 !py-2 !rounded-md"
+                                :class="$tab === 'preclinica' ? '!text-white !shadow-sm' : '!text-slate-700'">
+                                Preclínica
+                            </x-filament::tabs.item>
+                            @endcan
+
                             @can('history.view')
                             <x-filament::tabs.item
                                 :active="$tab === 'consultas'"
@@ -161,6 +171,16 @@
                                 Agregar
                             </x-filament::button>
                             @endcan
+                        
+
+                        @elseif ($tab === 'preclinica')
+                            @can('preclinic.create')
+                                <x-filament::button
+                                    icon="heroicon-o-plus"
+                                    wire:click="$dispatch('open-create-preclinic')">
+                                    Nueva preclínica
+                                </x-filament::button>
+                            @endcan
                         @endif
                     </div>
                 </div>
@@ -174,6 +194,10 @@
             @if ($tab === 'antecedentes')
                 @can('clinical-background.view')
                     <livewire:clinic.tabs.clinical-background-tab :patientId="$patient->id" />
+                @endcan
+            @elseif ($tab === 'preclinica')
+                @can('preclinic.view')
+                    <livewire:clinic.tabs.preclinic-tab :patientId="$patient->id" />
                 @endcan
             @elseif ($tab === 'consultas')
                 @can('history.view')

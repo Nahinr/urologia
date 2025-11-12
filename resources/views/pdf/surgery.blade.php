@@ -177,7 +177,7 @@
     <div class="sign">
         <div class="line"></div>
         <div class="small"><strong>Dr. {{ $userName }}</strong></div>
-        <div class="small">Cirujano Oftalmólogo</div>
+        <div class="small">Cirujano </div>
         @if(!empty($userSpecialty))
             <div class="small">{{ $userSpecialty }}</div>
         @endif

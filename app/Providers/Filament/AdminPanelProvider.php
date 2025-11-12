@@ -23,6 +23,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\PrescriptionPdfController;
+use App\Http\Controllers\SurgeryPdfController;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -61,6 +62,10 @@ class AdminPanelProvider extends PanelProvider
                     Route::get('/prescriptions/{prescription}/pdf', [PrescriptionPdfController::class, 'show'])
                          ->middleware(['can:print,prescription'])
                          ->name('prescriptions.pdf');
+                    
+                    Route::get('/surgeries/{surgery}/pdf', [SurgeryPdfController::class, 'show'])
+                        ->middleware(['can:print,surgery'])
+                        ->name('surgeries.pdf');
                 });
             })            
             ->plugin(

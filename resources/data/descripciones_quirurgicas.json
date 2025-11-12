@@ -1,14 +1,14 @@
 [
   {
-    "titulo": "Catarata por Facoemulsificación",
-    "descripcion": "Se realiza la cirugía de catarata bajo el microscopio oftalmológico utilizando la técnica de extracción extracapsular del cristalino por Facoemulsificación. Al llevar el paciente a la sala de cirugía, se utiliza la técnica aséptica con yodo en solución al 5% utilizando gaza para aplicar a los párpados, mejillas, cejas y pestañas. Seguidamente se realiza limpieza con hisopos humedecidos en yodo al 5% sobre las pestañas y también en el fórnix de la conjuntiva; se irriga y retira el yodo y se procede a colocar el campo quirúrgico. Se aplica un campo perforado y un steri-drape sellante para retirar pestañas. Se realiza queratocentesis de abordaje a 75°, a 90° de la incisión temporal en córnea clara con cuchillo de 2.4 mm. Se introduce azul tripán y OVD para formar cámara anterior. Capsulorrexis circular continua con aguja 25 y pinzas utrata (5.0 mm). Hidrodisección con cánula 27 y BSS; rotación del núcleo y nucleofractura con alto vacío/aspiración y baja potencia de ultrasonido. Se elimina corteza con irrigación-aspiración, se inyecta viscoelástico, se implanta LIO #22.0 en saco capsular y se rota a posición estable. Se retira OVD, se realiza miosis con miótico y moxifloxacino intracameral. Se verifica sellado de herida con infiltración de suero salino y se seca con microesponja. Al finalizar se instilan gotas de Tobramicina con Dexametasona y se indica manejo antiinflamatorio tópico."
+    "titulo": "Resección Transuretral de Próstata (RTU-P)",
+    "descripcion": "Bajo anestesia raquídea y técnica aséptica, se realiza la colocación de resectoscopio a través de uretra con irrigación continua. Se identifica el lóbulo medio y laterales prostáticos. Con asa de resección se efectúa vaporización progresiva del tejido hiperplásico hasta visualizar cápsula quirúrgica. Se controla hemostasia con coagulación bipolar y se deja sonda Foley de tres vías para irrigación vesical continua. Se finaliza con antibiótico profiláctico y analgesia."
   },
   {
-    "titulo": "Pterigión con Autoinjerto Conjuntival",
-    "descripcion": "Bajo técnica aséptica y anestesia local, se realiza marcaje del pterigión, resección cuidadosa de cabeza y cuerpo, pulido superficial de limbo y córnea, hemostasia y colocación de autoinjerto conjuntival superior con orientación limbar, fijado con suturas/adhesivo tisular. Se indican antibióticos y antiinflamatorios tópicos postoperatorios."
+    "titulo": "Nefrectomía Laparoscópica",
+    "descripcion": "Paciente en decúbito lateral, bajo anestesia general y asepsia rigurosa. Se colocan trocares laparoscópicos y se realiza neumoperitoneo. Se identifica riñón afectado, se diseca uréter y vasos renales; se clipan y seccionan arteria y vena renal. Se moviliza el órgano y se extrae en bolsa de seguridad. Se revisa hemostasia y se coloca dren. Se cierran puertos por planos. Paciente trasladado a recuperación con diuresis controlada."
   },
   {
-    "titulo": "Vitrectomía Pars Plana 23G",
-    "descripcion": "Tras asepsia y antisepsia estándar, se realiza colocación de trocares 23G a 3.5–4 mm del limbo, conexión a infusión, vitrectomía central y periférica guiada con visualización wide-angle; manejo de patología asociada (membranectomía/ILM peel/láser endofotocoagulación) según indicación; cierre de puertos y medicación intracameral según protocolo."
+    "titulo": "Cistolitotomía Abierta",
+    "descripcion": "Con el paciente en posición supina y bajo anestesia regional, se realiza incisión suprapúbica mediana baja. Se abre vejiga tras identificar plano vesical, se extrae cálculo único o múltiples con pinza de cálculo. Se inspecciona mucosa vesical, se lava cavidad con suero fisiológico, se coloca sonda Foley y dren suprapúbico. Se cierra vejiga en dos planos y piel por planos anatómicos. Se prescribe antibiótico y analgesia postoperatoria."
   }
 ]
